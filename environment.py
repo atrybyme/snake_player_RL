@@ -2,15 +2,15 @@ import numpy as np
 import random
 
 class Env():
-    height = 6
-    width = 6
-    snake = [[int((height)/2 - 1),int((width)/2-1)]]
-    score = 0
-    is_finished=False
-    while 1:
-        target = [random.randint(0,height - 1),random.randint(0,width - 1)]
-        if target!=snake:
-            break
+    def __init__(self,h,w):
+        self.height = h
+        self.width = w
+        self.snake = [[int((self.height)/2),int((self.width)/2)]]
+        self.is_finished=False
+        while 1:
+            self.target = [random.randint(0,self.height - 1),random.randint(0,self.width - 1)]
+            if self.target!=self.snake:
+                break
     def generate_target(self):
         target = [random.randint(0, self.height - 1),
                   random.randint(0, self.width - 1)]
