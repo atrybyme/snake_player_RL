@@ -7,6 +7,7 @@ class Env():
         self.width = w
         self.snake = [[int((self.height)/2),int((self.width)/2)]]
         self.is_finished=False
+        self.last_action = -1
         while 1:
             self.target = [random.randint(0,self.height - 1),random.randint(0,self.width - 1)]
             if self.target!=self.snake:
@@ -34,44 +35,48 @@ class Env():
         self.target = self.generate_target()
         self.is_finished = False
         self.reward = 0
-            
+        self.last_action  = -1
             
                 
     def step(self,action_taken):
         self.reward  = 0.0
         if self.snake !="Terminal":
-            head = self.snake[0]
-            if len(self.snake)==1:
-                neck = [200,200]
-            else:
-                neck =self.snake[1]
+            #head = self.snake[0]
+            #if len(self.snake)==1:
+            #    neck = [200,200]
+            #else:
+             #   neck =self.snake[1]
             end = self.snake[-1]
             if len(self.snake)>1:
                 self.snake[1:] = self.snake[0:len(self.snake)-2]
             # w==0==up
             if action_taken == 0:
-                if (head[0]>neck[0]) and (head[1]==neck[1]):
+                if self.last_action==2:
                     self.snake[0] = [(self.snake[0])[0]+1, (self.snake[0])[1]]
                 else:
                     self.snake[0] = [(self.snake[0])[0]-1, (self.snake[0])[1]]
+                    self.last_action = 0
             # a==1==left
             if action_taken == 1:
-                if (head[0]==neck[0]) and (head[1]>neck[1]):
+                if self.last_action==3:
                     self.snake[0] = [(self.snake[0])[0], (self.snake[0])[1]+1]
                 else:
                     self.snake[0] = [(self.snake[0])[0], (self.snake[0])[1]-1]
+                    self.last_action=1
             # s==2==down
-            elif action_taken == 2:
-                if (head[0] < neck[0]) and (head[1] == neck[1]):
+            if action_taken == 2:
+                if self.last_action==0:
                     self.snake[0] = [(self.snake[0])[0]-1, (self.snake[0])[1]]
                 else:
                     self.snake[0] = [(self.snake[0])[0]+1, (self.snake[0])[1]]
+                    self.last_action=2
             #self==3==right
-            elif action_taken == 3:
-                if (head[0] == neck[0]) and (head[1] < neck[1]):
+            if action_taken == 3:
+                if self.last_action==1:
                     self.snake[0] = [(self.snake[0])[0], (self.snake[0])[1]-1]
                 else:
                     self.snake[0] = [(self.snake[0])[0], (self.snake[0])[1]+1]
+                    self.last_action=3
             if ((self.snake[0])[0] >= self.height) or ((self.snake[0])[0] < 0) or ((self.snake[0])[1] >= self.width) or ((self.snake[0])[1] < 0):
                 self.is_finished = True
             if self.target == self.snake[0]:
