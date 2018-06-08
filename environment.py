@@ -74,7 +74,6 @@ class Env():
         if self.snake == "Terminal":
             return "Terminal"
         board[(self.snake[0])[0], (self.snake[0])[1]] = 2
-        print(self.target)
         board[self.target[0],self.target[1]] = 3
         if len(self.snake)>1 :
             for point in self.snake[1:]:
