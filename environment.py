@@ -38,29 +38,47 @@ class Env():
             
                 
     def step(self,action_taken):
-        self.reward  = 0
+        self.reward  = 0.0
         if self.snake !="Terminal":
+            head = self.snake[0]
+            if len(self.snake)==1:
+                neck = [200,200]
+            else:
+                neck =self.snake[1]
             end = self.snake[-1]
             if len(self.snake)>1:
                 self.snake[1:] = self.snake[0:len(self.snake)-2]
-            if action_taken == 'w':
-                self.snake[0] = [(self.snake[0])[0]-1, (self.snake[0])[1]]
-            elif action_taken == 'a':
-                self.snake[0] = [(self.snake[0])[0], (self.snake[0])[1]-1]
-            elif action_taken == 's':
-                self.snake[0] = [(self.snake[0])[0]+1, (self.snake[0])[1]]
-            elif action_taken == 'd':
-                self.snake[0] = [(self.snake[0])[0], (self.snake[0])[1]+1]
-            else:
-                act = input("Action taken was invalid.Please take a valid action : 'w,a,s,d' : ")
-                return  self.step(act)
+            # w==0==up
+            if action_taken == 0:
+                if (head[0]>neck[0]) and (head[1]==neck[1]):
+                    self.snake[0] = [(self.snake[0])[0]+1, (self.snake[0])[1]]
+                else:
+                    self.snake[0] = [(self.snake[0])[0]-1, (self.snake[0])[1]]
+            # a==1==left
+            if action_taken == 1:
+                if (head[0]==neck[0]) and (head[1]>neck[1]):
+                    self.snake[0] = [(self.snake[0])[0], (self.snake[0])[1]+1]
+                else:
+                    self.snake[0] = [(self.snake[0])[0], (self.snake[0])[1]-1]
+            # s==2==down
+            elif action_taken == 2:
+                if (head[0] < neck[0]) and (head[1] == neck[1]):
+                    self.snake[0] = [(self.snake[0])[0]-1, (self.snake[0])[1]]
+                else:
+                    self.snake[0] = [(self.snake[0])[0]+1, (self.snake[0])[1]]
+            #self==3==right
+            elif action_taken == 3:
+                if (head[0] == neck[0]) and (head[1] < neck[1]):
+                    self.snake[0] = [(self.snake[0])[0], (self.snake[0])[1]-1]
+                else:
+                    self.snake[0] = [(self.snake[0])[0], (self.snake[0])[1]+1]
             if ((self.snake[0])[0] >= self.height) or ((self.snake[0])[0] < 0) or ((self.snake[0])[1] >= self.width) or ((self.snake[0])[1] < 0):
                 self.is_finished = True
             if self.target == self.snake[0]:
                 (self.snake).append(end)
                 self.target = self.generate_target()
-                self.score +=1
-                self.reward = 1
+                self.score +=1.0
+                self.reward = 1.0
             for body_point in self.snake[1:]:
                 if self.snake[0] == body_point:
                     self.is_finished = True
@@ -68,7 +86,7 @@ class Env():
         if self.is_finished == True:
             self.snake = "Terminal"
             if len(self.snake)< self.height * self.width -3 :
-                self.reward = -1
+                self.reward = -1.0
     def state(self):
         board = np.zeros((self.height,self.width))
         if self.snake == "Terminal":
