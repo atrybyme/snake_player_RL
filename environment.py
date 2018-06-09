@@ -8,6 +8,7 @@ class Env():
         self.snake = [[int((self.height)/2),int((self.width)/2)]]
         self.is_finished=False
         self.last_action = -1
+        self.step_without_reward = 0
         while 1:
             self.target = [random.randint(0,self.height - 1),random.randint(0,self.width - 1)]
             if self.target!=self.snake:
@@ -36,9 +37,11 @@ class Env():
         self.is_finished = False
         self.reward = 0
         self.last_action  = -1
+        self.step_without_reward = 0
             
                 
     def step(self,action_taken):
+        self.step_without_reward +=1 
         self.reward  = 0.0
         if self.snake !="Terminal":
             #head = self.snake[0]
@@ -84,10 +87,15 @@ class Env():
                 self.target = self.generate_target()
                 self.score +=1.0
                 self.reward = 1.0
+                self.step_without_reward = 0
             for body_point in self.snake[1:]:
                 if self.snake[0] == body_point:
                     self.is_finished = True
                     break
+        if self.step_without_reward>=25:
+            self.is_finished = True
+        if (len(self.snake)>=24):
+            self.is_finished = True
         if self.is_finished == True:
             self.snake = "Terminal"
             if len(self.snake)< self.height * self.width -3 :
