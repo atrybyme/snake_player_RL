@@ -7,6 +7,8 @@ from keras.layers import Dense, Flatten, Conv2D
 import h5py
 import time
 import sys
+from keras.models import load_model
+
 #game_parameters
 action_size = 4
 state_size = [5,5]
@@ -14,25 +16,27 @@ state_size = [5,5]
 
 #model
 class DQN_net():
-    def __init__(self, state_size, action_size,gamma=0.945,minibatch_size=32):
-
-        #hyperparameters
+    def __init__(self, state_size, action_size,gamma=0.93,minibatch_size=32):
         self.gamma = gamma
         self.minibatch_size = minibatch_size
-
         #to determine model size
         self.state_size = state_size
         self.action_size = action_size
-        #Define model
-        self.dqn_net = Sequential()
-        self.dqn_net.add(Conv2D(16,(1,1),activation='relu',input_shape=(state_size[0],state_size[1],1)))
-        self.dqn_net.add(Conv2D(32,(2,2),activation='relu'))
-        self.dqn_net.add(Conv2D(32, (3, 3), activation='relu'))
-        self.dqn_net.add(Flatten())
-        self.dqn_net.add(Dense(128,activation='relu'))
-        self.dqn_net.add(Dense(64, activation='relu'))
-        self.dqn_net.add(Dense(action_size))
-        self.dqn_net.compile(loss='mse', optimizer='rmsprop', metrics=['accuracy'])
+        try:
+            self.dqn_net = load_model("saved_model_v1_42.h5")
+        except:
+
+
+            #Define model
+            self.dqn_net = Sequential()
+            self.dqn_net.add(Conv2D(16,(1,1),activation='relu',input_shape=(state_size[0],state_size[1],1)))
+            self.dqn_net.add(Conv2D(32,(2,2),activation='relu'))
+            self.dqn_net.add(Conv2D(32, (3, 3), activation='relu'))
+            self.dqn_net.add(Flatten())
+            self.dqn_net.add(Dense(128,activation='relu'))
+            self.dqn_net.add(Dense(64, activation='relu'))
+            self.dqn_net.add(Dense(action_size))
+            self.dqn_net.compile(loss='mse', optimizer='rmsprop', metrics=['accuracy'])
     
     def train(self,memory):
         x_train = []
@@ -59,12 +63,14 @@ class DQN_net():
         self.dqn_net.fit(x_train,np.asarray(y_train),batch_size = self.minibatch_size,verbose=0)
 
 game = Env(state_size[0],state_size[1])
-max_memory_len = 100000
+max_memory_len = 50000
 memory = deque(maxlen=max_memory_len)
-episode = 1000000
-epsilon = 1.0
-epsilon_decay = 0.99
-minimum_epsilon = 0.002
+avg_scr = deque(maxlen=100)
+episode = 10000000
+epsilon = 1
+epsilon_decay = 0.995
+minimum_epsilon = 0.005
+
 network = DQN_net(state_size,action_size)
 time_span = []
 for e in range(episode):
@@ -88,14 +94,16 @@ for e in range(episode):
         b =  "Time step without dying: " + str(t)
         sys.stdout.write('\r'+b)
     epsilon = epsilon_decay*epsilon
+    avg_scr.append(game.score)
     if epsilon <= minimum_epsilon:
         epsilon = minimum_epsilon
     if e%100 == 0 :
-        time_span.append([t,game.score])
-        print(" || Total Scode of after episode" ,'%.3f'%((e/episode)*100), "% : ", game.score )
-        network.train(memory)
+        if e >0:
+            time_span.append([t,game.score])
+            print(" || Avg Scode of 100 episode after episode" ,'%.3f'%((e/episode)*100), "% : ", np.sum(avg_scr)/100 )
+            network.train(memory)
     if e % 40000 == 0:
-        save_name = "saved_model" + str(int(e/40000)) + ".h5"
+        save_name = "saved_model_v2_" + str(int(e/40000)) + ".h5"
         network.dqn_net.save(save_name)
 
 
