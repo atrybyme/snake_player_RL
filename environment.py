@@ -51,7 +51,7 @@ class Env():
              #   neck =self.snake[1]
             end = self.snake[-1]
             if len(self.snake)>1:
-                self.snake[1:] = self.snake[0:len(self.snake)-2]
+                self.snake[1:] = self.snake[0:len(self.snake)-1]
             # w==0==up
             if action_taken == 0:
                 if self.last_action==2:
