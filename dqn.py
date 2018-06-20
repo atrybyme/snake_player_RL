@@ -68,8 +68,8 @@ memory = deque(maxlen=max_memory_len)
 avg_scr = deque(maxlen=100)
 episode = 1000000
 epsilon = 1
-epsilon_decay = 0.995
-minimum_epsilon = 0.005
+epsilon_decay = 0.998
+minimum_epsilon = 0.001
 
 network = DQN_net(state_size,action_size)
 time_span = []
