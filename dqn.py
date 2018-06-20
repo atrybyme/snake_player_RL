@@ -11,7 +11,7 @@ from keras.models import load_model
 
 #game_parameters
 action_size = 4
-state_size = [5,5]
+state_size = [7,7]
 
 
 #model
@@ -23,7 +23,7 @@ class DQN_net():
         self.state_size = state_size
         self.action_size = action_size
         try:
-            self.dqn_net = load_model("saved_model_v1_42.h5")
+            self.dqn_net = load_model("saved_model_v3_42.h5")
         except:
 
 
@@ -66,7 +66,7 @@ game = Env(state_size[0],state_size[1])
 max_memory_len = 50000
 memory = deque(maxlen=max_memory_len)
 avg_scr = deque(maxlen=100)
-episode = 10000000
+episode = 1000000
 epsilon = 1
 epsilon_decay = 0.995
 minimum_epsilon = 0.005
@@ -97,18 +97,18 @@ for e in range(episode):
     avg_scr.append(game.score)
     if epsilon <= minimum_epsilon:
         epsilon = minimum_epsilon
-    if e%100 == 0 :
+    if e%1000 == 0 :
         if e >0:
-            time_span.append([t,game.score])
+            time_span.append([e, np.sum(avg_scr)/100])
             print(" || Avg Scode of 100 episode after episode" ,'%.3f'%((e/episode)*100), "% : ", np.sum(avg_scr)/100 )
             network.train(memory)
     if e % 40000 == 0:
-        save_name = "saved_model_v2_" + str(int(e/40000)) + ".h5"
+        save_name = "saved_model_v3_" + str(int(e/40000)) + ".h5"
         network.dqn_net.save(save_name)
 
 
 network.dqn_net.save("trained_mode.h5")
-np.save('time_span.npy',np.asarray(time_span))
+np.save('time_span_1.npy',np.asarray(time_span))
 
 
 
