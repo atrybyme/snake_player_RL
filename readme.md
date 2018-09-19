@@ -23,7 +23,7 @@ ______________________________________
 5. [Continuous control with deep reinforcement learning][8]
 6. [Playing Atari with Deep Reinforcement Learning][9]
 
-**Repository is still building I are trying Actor Critic Models.The result will be uploaded soon.**
+**Repository is still building I am trying Actor Critic Models.The result will be uploaded soon.**
 
 [1]: 2e51ig.gif
 [2]: 2e51ex.gif
